@@ -4,12 +4,11 @@ import { errorHandler } from "../utils/error.js"
 import jwt from "jsonwebtoken"
 
 export const signup = async(req, res, next) => {
-    {
     const {name, email, password, profileImageUrl, adminJoinCode} = req.body
 
     if(!name || !email || !password || name === "" || email === "" || password === ""){
         return next(errorHandler(400, "All fields are required"))
-    }
+
     }
 
     // To check if user already exists with given info
@@ -70,7 +69,7 @@ export const signin = async(req, res, next) => {
         const token = jwt.sign({id: validUser._id}, process.env.JWT_SECRET)
 
         const {password: pass, ...rest} = validUser._doc
-        res.status(200).cookie("Access Token", token, {httpOnly: true}).json(rest)
+        res.status(200).cookie("access_token", token, {httpOnly: true}).json(rest)
     } catch (error) {
         next(error)
     }
@@ -85,8 +84,33 @@ export const userProfile = async(req, res, next) => {
         }
 
         const {password: pass, ...rest} = user._doc
-        res.status(200).json(rest)
-    } catch (error){
-        next(error)
+       res.status(200).cookie("access_token", token, { httpOnly: true }).json(rest)
+  } catch (error) {
+    next(error)
     }
+}
+
+export const updateUserProfile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id)
+
+    if (!user) {
+      return next(errorHandler(404, "User not found!"))
+    }
+
+    user.name = req.body.name || user.name
+    user.email = req.body.email || user.email
+
+    if (req.body.password) {
+      user.password = bcryptjs.hashSync(req.body.password, 10)
+    }
+
+    const updatedUser = await user.save()
+
+    const { password: pass, ...rest } = user._doc
+
+    res.status(200).json(rest)
+  } catch (error) {
+    next(error)
+  }
 }
