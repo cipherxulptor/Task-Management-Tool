@@ -10,6 +10,9 @@ import TodoListInput from "../../components/TodoListInput"
 import AddAttachmentsInput from "../../components/AddAttachmentsInput"
 import axiosInstance from "../../utils/axioInstance"
 import moment from "moment"
+import toast from "react-hot-toast"
+import Modal from "../../components/Modal"
+import DeleteAlert from "../../components/DeleteAlert"
 
 const CreateTask = () => {
   
@@ -68,17 +71,44 @@ const CreateTask = () => {
         dueDate: new Date(taskData.dueDate).toISOString(),
         todoChecklist: todolist,
       })
+      toast.success("Task created successfully!")
 
       clearData()
 
-      console.log(response.data)
+      //console.log(response.data)
     } catch (error) {
       console.log("Error creating task: ", error)
+      toast.error("Error creating task!")
     }
   }
 
   // update task
-  const updateTask = async () => {}
+  const updateTask = async () => {
+    try {
+      const todolist = taskData.todoChecklist?.map((item) => {
+        const prevTodoChecklist = currentTask?.todoChecklist || []
+        const matchedTask = prevTodoChecklist.find((task) => task.text === item)
+
+        return {
+          text: item,
+          completed: matchedTask ? matchedTask.completed : false,
+        }
+      })
+
+      const response = await axiosInstance.put(`/tasks/${taskId}`, {
+        ...taskData,
+        dueDate: new Date(taskData.dueDate).toISOString(),
+        todoChecklist: todolist,
+      })
+
+      toast.success("Task updated successfully!")
+
+      console.log(response.data)
+    } catch (error) {
+      console.log("Error updating task: ", error)
+      toast.error("Error updating task!")
+    }
+  }
 
   const handleSubmit = async (e) => {
     setError("")
@@ -146,7 +176,19 @@ const CreateTask = () => {
   }
 
   // delete task
-  const deleteTask = async () => {}
+  const deleteTask = async () => {
+    try {
+      await axiosInstance.delete(`/tasks/${taskId}`)
+
+      setOpenDeleteAlert(false)
+
+      toast.success("Task deleted successfully!")
+
+      navigate("/admin/tasks")
+    } catch (error) {
+      console.log("Error delating task: ", error)
+    }
+  }
 
 
   useEffect(() => {
@@ -300,6 +342,18 @@ const CreateTask = () => {
           </form>
         </div>
       </div>
+
+      <Modal
+        isOpen={openDeleteAlert}
+        onClose={() => setOpenDeleteAlert(false)}
+        title={"Delete Task"}
+      >
+        <DeleteAlert
+          content="Are you sure you want to delete this task?"
+          onDelete={() => deleteTask()}
+        />
+      </Modal>
+      
     </DashboardLayout>
   )
 }

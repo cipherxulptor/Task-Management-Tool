@@ -11,6 +11,7 @@ import UserDashboard from "./pages/users/UserDashboard"
 import TaskDetails from "./pages/users/TaskDetails"
 import MyTasks from "./pages/users/MyTasks"
 import { useSelector } from "react-redux"
+import toast, { Toaster } from "react-hot-toast"
 
 const App = () => {
   return (
@@ -40,6 +41,7 @@ const App = () => {
           </Route>
         </Routes>
       </BrowserRouter>
+      <Toaster />
     </div>
   )
 }
