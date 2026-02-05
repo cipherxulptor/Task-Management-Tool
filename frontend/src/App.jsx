@@ -1,5 +1,5 @@
 import React from "react"
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import Login from "./pages/auth/Login"
 import SignUp from "./pages/auth/SignUp"
 import Dashboard from "./pages/admin/Dashboard"
@@ -10,6 +10,7 @@ import PrivateRoute from "./routes/PrivateRoute"
 import UserDashboard from "./pages/users/UserDashboard"
 import TaskDetails from "./pages/users/TaskDetails"
 import MyTasks from "./pages/users/MyTasks"
+import { useSelector } from "react-redux"
 
 const App = () => {
   return (
@@ -32,6 +33,10 @@ const App = () => {
             <Route path="/user/dashboard" element={<UserDashboard />} />
             <Route path="/user/tasks" element={<MyTasks />} />
             <Route path="/user/task-details/:id" element={<TaskDetails />} />
+
+            {/* Default Route */}
+          <Route path="/" element={<Root />} />
+
           </Route>
         </Routes>
       </BrowserRouter>
@@ -40,3 +45,17 @@ const App = () => {
 }
 
 export default App
+
+const Root = () => {
+  const { currentUser } = useSelector((state) => state.user)
+
+  if (!currentUser) {
+    return <Navigate to={"/login"} />
+  }
+
+  return currentUser.role === "admin" ? (
+    <Navigate to={"/admin/dashboard"} />
+  ) : (
+    <Navigate to={"/user/dashboard"} />
+  )
+}
