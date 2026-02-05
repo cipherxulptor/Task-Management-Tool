@@ -8,6 +8,7 @@ import "react-datepicker/dist/react-datepicker.css"
 import SelectedUsers from "../../components/SelectedUsers"
 import TodoListInput from "../../components/TodoListInput"
 import AddAttachmentsInput from "../../components/AddAttachmentsInput"
+import axiosInstance from "../../utils/axioInstance"
 
 const CreateTask = () => {
   
@@ -54,12 +55,66 @@ const CreateTask = () => {
   }
 
   // create task
-  const createTask = async () => {}
+  const createTask = async () => {
+    try {
+      const todolist = taskData.todoChecklist?.map((item) => ({
+        text: item,
+        completed: false,
+      }))
+
+      const response = await axiosInstance.post("/tasks/create", {
+        ...taskData,
+        dueDate: new Date(taskData.dueDate).toISOString(),
+        todoChecklist: todolist,
+      })
+
+      clearData()
+
+      console.log(response.data)
+    } catch (error) {
+      console.log("Error creating task: ", error)
+    }
+  }
 
   // update task
   const updateTask = async () => {}
 
-  const handleSubmit = async (e) => {}
+  const handleSubmit = async (e) => {
+    setError("")
+
+    if (!taskData.title.trim()) {
+      setError("Title is required!")
+      return
+    }
+
+    if (!taskData.description.trim()) {
+      setError("Description is required!")
+      return
+    }
+
+    if (!taskData.dueDate) {
+      setError("Due date is required!")
+      return
+    }
+
+    if (taskData.assignedTo?.length === 0) {
+      setError("Task is not assigned to any member!")
+      return
+    }
+
+    if (taskData.todoChecklist?.length === 0) {
+      setError("Add atleast one todo task!")
+      return
+    }
+
+    if (taskId) {
+      updateTask()
+
+      return
+    }
+
+    createTask()
+  }
 
   // get task info by id
   const getTaskDetailsById = async () => {}
@@ -85,12 +140,6 @@ const CreateTask = () => {
               </button>
             )}
           </div>
-
-          {error && (
-            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
-              {error}
-            </div>
-          )}
 
           <form onSubmit={handleSubmit}>
             <div className="space-y-6">
@@ -207,6 +256,7 @@ const CreateTask = () => {
                 <button
                   className="px-2 py-2 bg-green-500 border border-green-300 rounded-md text-white hover:bg-green-800 cursor-pointer w-full"
                   onClick={handleSubmit}
+                  type="button"
                 >
                   {taskId ? "UPDATE TASK" : "CREATE TASK"}
                 </button>
