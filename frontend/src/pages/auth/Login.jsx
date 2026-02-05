@@ -35,10 +35,16 @@ const Login = () => {
     // Login API call
     try {
       dispatch(signInStart())
-      const response = await axiosInstance.post("/auth/sign-in", {
-        email,
-        password,
-      })
+      const response = await axiosInstance.post(
+        "/auth/sign-in",
+        {
+          email,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
+      )
 
       // console.log(response.data)
 
