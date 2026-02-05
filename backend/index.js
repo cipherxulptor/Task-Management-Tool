@@ -27,7 +27,7 @@ const app = express()
 
 //Middleware for cors//
 app.use(cors({
-    origin: process.env.FRONT_END_URL || "http://localhost:5173/",
+    origin: process.env.FRONT_END_URL || "http://localhost:5174/",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
 })
