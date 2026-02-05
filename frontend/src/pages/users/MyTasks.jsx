@@ -7,7 +7,7 @@ import { FaFileLines } from "react-icons/fa6"
 import TaskCard from "../../components/TaskCard"
 import toast from "react-hot-toast"
 
-  const MyTask = () => {
+  const MyTasks = () => {
   const [allTasks, setAllTasks] = useState([])
   const [tabs, setTabs] = useState([
     { label: "All", count: 0 },
