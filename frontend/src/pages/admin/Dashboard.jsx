@@ -29,6 +29,12 @@ const Dashboard = () => {
       { status: "Completed", count: taskDistribution?.Completed || 0 },
     ]
 
+    const handleProfileUpload = async (file) => {
+  const { imageUrl } = await uploadImage(file)
+  await axiosInstance.put("/user/profile", { profileImageUrl: imageUrl })
+}
+
+
     setPieChartData(taskDistributionData)
 
     const priorityLevelData = [

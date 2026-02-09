@@ -25,31 +25,25 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
 
 const app = express()
 
-//Middleware for cors//
 app.use(cors({
-    origin: process.env.FRONT_END_URL || "http://localhost:5174/",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: true,
     credentials: true,
-})
-)
-
-//Middleware to parse JSON request bodies//
+}))
 app.use(express.json())
-
 app.use(cookieParser())
-app.listen( 3000, () =>{
-    console.log("Server is running on port 3000")
-})
 
-app.use("/api/auth", authRoutes)  
+app.use("/api/auth", authRoutes)
 app.use("/api/users", userRoutes)
 app.use("/api/tasks", taskRoutes)
 app.use("/api/reports", reportRoutes)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")))
 
+app.use((req, res, next) => {
+    next(errorHandler(404, "API route not found"))
+})
+
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500
-
     const message = err.message || "Internal Server Error"
 
     res.status(statusCode).json({
@@ -57,4 +51,8 @@ app.use((err, req, res, next) => {
         statusCode,
         message
     })
+})
+
+app.listen(3000, () => {
+    console.log("Server is running on port 3000")
 })

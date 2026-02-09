@@ -83,7 +83,7 @@ const Login = () => {
               </div>
 
               <h1 className="text-2xl font-bold text-gray-800 mt-4 uppercase">
-                Project Flow
+                Task Manager
               </h1>
 
               <p className="text-gray-600 mt-1">
@@ -161,7 +161,7 @@ const Login = () => {
 
             <div className="mt-6 text-center text-sm">
               <p className="text-gray-600">
-                Don't have an accout?{" "}
+                Don't have an account?{" "}
                 <Link
                   to={"/signup"}
                   className="font-medium text-blue-600 hover:text-blue-500"
